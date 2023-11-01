@@ -32,7 +32,7 @@ namespace EFMigration.Data.Config
                 .WithMany(s => s.Sections)
                 .HasForeignKey(s => s.ScheduleId).IsRequired();
 
-            builder.HasMany(s => s.Students)
+            builder.HasMany(s => s.Participants)
                 .WithMany(s => s.Sections)
                 .UsingEntity<Enrollment>();
 

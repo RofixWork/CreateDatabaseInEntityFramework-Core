@@ -2,16 +2,21 @@
 using Microsoft.EntityFrameworkCore;
 namespace EFMigration.Data.Config
 {
-    public class StudentConfiguration : IEntityTypeConfiguration<Student>
+    public class ParticipantConfiguration : IEntityTypeConfiguration<Participant>
     {
-        public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<Student> builder)
+        public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<Participant> builder)
         {
             //config
             builder.HasKey(s => s.Id);
             builder.Property(c => c.Id).ValueGeneratedNever();
-            builder.Property(c => c.Name).HasColumnType("varchar").HasMaxLength(maxLength: 255).IsRequired();
-            builder.ToTable(name: "Students");
+            builder.Property(c => c.FName).HasColumnType("varchar").HasMaxLength(maxLength: 255).IsRequired();
+            builder.Property(c => c.LName).HasColumnType("varchar").HasMaxLength(maxLength: 255).IsRequired();
+            builder.ToTable(name: "Participants");
 
+            //builder.HasDiscriminator<string>("ParticipantType").HasValue<Individual>("INDV").HasValue<Coporate>("COPR");
+
+            //builder.Property("ParticipantType").HasColumnType("varchar").HasMaxLength(maxLength: 4);
+            builder.UseTptMappingStrategy();
             //builder.HasData(LoadStudents());
         }
 
