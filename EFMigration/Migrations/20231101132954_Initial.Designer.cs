@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EFMigration.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231031144256_CreateScheduleEnum")]
-    partial class CreateScheduleEnum
+    [Migration("20231101132954_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -52,7 +52,12 @@ namespace EFMigration.Migrations
                     b.Property<int>("SectionId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("ParticipantId")
+                        .HasColumnType("int");
+
                     b.HasKey("StudentId", "SectionId");
+
+                    b.HasIndex("ParticipantId");
 
                     b.HasIndex("SectionId");
 
@@ -104,6 +109,28 @@ namespace EFMigration.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Offices", (string)null);
+                });
+
+            modelBuilder.Entity("EFMigration.Entities.Participant", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar");
+
+                    b.Property<string>("LName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Participants", (string)null);
+
+                    b.UseTptMappingStrategy();
                 });
 
             modelBuilder.Entity("EFMigration.Entities.Schedule", b =>
@@ -173,38 +200,50 @@ namespace EFMigration.Migrations
                     b.ToTable("Sections", (string)null);
                 });
 
-            modelBuilder.Entity("EFMigration.Entities.Student", b =>
+            modelBuilder.Entity("EFMigration.Entities.Coporate", b =>
                 {
-                    b.Property<int>("Id")
+                    b.HasBaseType("EFMigration.Entities.Participant");
+
+                    b.Property<string>("CompanyName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("JobTitle")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable("Coporates");
+                });
+
+            modelBuilder.Entity("EFMigration.Entities.Individual", b =>
+                {
+                    b.HasBaseType("EFMigration.Entities.Participant");
+
+                    b.Property<bool>("IsIntern")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("University")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("YearOfGraduation")
                         .HasColumnType("int");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Students", (string)null);
+                    b.ToTable("Individuals");
                 });
 
             modelBuilder.Entity("EFMigration.Entities.Enrollment", b =>
                 {
+                    b.HasOne("EFMigration.Entities.Participant", "Participant")
+                        .WithMany()
+                        .HasForeignKey("ParticipantId");
+
                     b.HasOne("EFMigration.Entities.Section", "Section")
                         .WithMany()
                         .HasForeignKey("SectionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EFMigration.Entities.Student", "Student")
-                        .WithMany()
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Participant");
 
                     b.Navigation("Section");
-
-                    b.Navigation("Student");
                 });
 
             modelBuilder.Entity("EFMigration.Entities.Instructor", b =>
@@ -262,6 +301,24 @@ namespace EFMigration.Migrations
                     b.Navigation("Schedule");
 
                     b.Navigation("TimeSlot");
+                });
+
+            modelBuilder.Entity("EFMigration.Entities.Coporate", b =>
+                {
+                    b.HasOne("EFMigration.Entities.Participant", null)
+                        .WithOne()
+                        .HasForeignKey("EFMigration.Entities.Coporate", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("EFMigration.Entities.Individual", b =>
+                {
+                    b.HasOne("EFMigration.Entities.Participant", null)
+                        .WithOne()
+                        .HasForeignKey("EFMigration.Entities.Individual", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("EFMigration.Entities.Course", b =>

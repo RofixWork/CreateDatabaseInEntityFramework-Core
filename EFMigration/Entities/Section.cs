@@ -11,7 +11,7 @@
         public TimeSlot? TimeSlot { get; set; }
         public int? InstructorId { get; set; }
         public Instructor? Instructor { get; set; }
-        public ICollection<Student> Students { get; set; } = new List<Student>();
+        public ICollection<Participant> Participants { get; set; } = new List<Participant>();
     }
 
     public class TimeSlot

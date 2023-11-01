@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EFMigration.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -38,6 +38,19 @@ namespace EFMigration.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Participants",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    FName = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false),
+                    LName = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Participants", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Schedules",
                 columns: table => new
                 {
@@ -54,18 +67,6 @@ namespace EFMigration.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Schedules", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Students",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Students", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -88,6 +89,45 @@ namespace EFMigration.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Coporates",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    CompanyName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    JobTitle = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Coporates", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Coporates_Participants_Id",
+                        column: x => x.Id,
+                        principalTable: "Participants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Individuals",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    University = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    YearOfGraduation = table.Column<int>(type: "int", nullable: false),
+                    IsIntern = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Individuals", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Individuals_Participants_Id",
+                        column: x => x.Id,
+                        principalTable: "Participants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Sections",
                 columns: table => new
                 {
@@ -95,8 +135,8 @@ namespace EFMigration.Migrations
                     SectionName = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false),
                     CourseId = table.Column<int>(type: "int", nullable: false),
                     ScheduleId = table.Column<int>(type: "int", nullable: false),
-                    StartTime = table.Column<TimeSpan>(type: "time", nullable: false),
-                    EndTime = table.Column<TimeSpan>(type: "time", nullable: false),
+                    StartTime = table.Column<TimeSpan>(type: "time", nullable: true),
+                    EndTime = table.Column<TimeSpan>(type: "time", nullable: true),
                     InstructorId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -126,24 +166,29 @@ namespace EFMigration.Migrations
                 columns: table => new
                 {
                     StudentId = table.Column<int>(type: "int", nullable: false),
-                    SectionId = table.Column<int>(type: "int", nullable: false)
+                    SectionId = table.Column<int>(type: "int", nullable: false),
+                    ParticipantId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Enrollments", x => new { x.StudentId, x.SectionId });
+                    table.ForeignKey(
+                        name: "FK_Enrollments_Participants_ParticipantId",
+                        column: x => x.ParticipantId,
+                        principalTable: "Participants",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Enrollments_Sections_SectionId",
                         column: x => x.SectionId,
                         principalTable: "Sections",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Enrollments_Students_StudentId",
-                        column: x => x.StudentId,
-                        principalTable: "Students",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Enrollments_ParticipantId",
+                table: "Enrollments",
+                column: "ParticipantId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Enrollments_SectionId",
@@ -177,13 +222,19 @@ namespace EFMigration.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "Coporates");
+
+            migrationBuilder.DropTable(
                 name: "Enrollments");
+
+            migrationBuilder.DropTable(
+                name: "Individuals");
 
             migrationBuilder.DropTable(
                 name: "Sections");
 
             migrationBuilder.DropTable(
-                name: "Students");
+                name: "Participants");
 
             migrationBuilder.DropTable(
                 name: "Courses");
