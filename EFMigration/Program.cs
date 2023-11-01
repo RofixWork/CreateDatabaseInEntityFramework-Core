@@ -56,10 +56,20 @@ using (var db = new AppDbContext())
 	db.Participants.AddRange(participant1, participant2);
 	db.SaveChanges();*/
 
-	var indivuals = db.Participants.OfType<Individual>().ToList();
+	//var indivuals = db.Participants.OfType<Individual>().ToList();
 
-	foreach (var item in indivuals)
+	//foreach (var item in indivuals)
+	//{
+	//	Console.WriteLine(JsonSerializer.Serialize(item));
+	//}
+
+	var quiz = new TrueAndFalseQuiz
 	{
-		Console.WriteLine(JsonSerializer.Serialize(item));
-	}
+		Id = 1,
+		Title = "5 + 5 = 10",
+		CorrectAnswer = true,
+	};
+
+	db.TrueAndFalseQuizzes.Add(quiz);
+	db.SaveChanges();
 }

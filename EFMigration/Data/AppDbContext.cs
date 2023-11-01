@@ -16,6 +16,8 @@ namespace EFMigration.Data
         public DbSet<Individual> Individuals { get; set; }
         public DbSet<Coporate> Coporates { get; set; }
         public DbSet<Enrollment> Enrollments { get; set; }
+        public DbSet<MultipleChoiceQuiz> MultipleChoiceQuizzes { get; set; }
+        public DbSet<TrueAndFalseQuiz> TrueAndFalseQuizzes { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
